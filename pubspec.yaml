@@ -21,6 +21,7 @@ dependencies:
   battery_plus: ^3.0.5
   device_info_plus: ^9.0.1
   qr_flutter: ^4.0.0
+  draw_graph: ^1.0.0
 
 dev_dependencies:
   flutter_test:

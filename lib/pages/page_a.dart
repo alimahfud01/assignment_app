@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:assignment_app/bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
@@ -14,17 +15,17 @@ class PageA extends StatefulWidget {
 }
 
 class _PageAState extends State<PageA> {
-  String formattedTime = DateFormat('kk:mm:ss').format(DateTime.now());
-
+  String formattedTime = DateFormat('kk:mm').format(DateTime.now());
   //time
-  late Timer _timer;
+  late Timer _timer1;
+  late Timer _timer2;
   late dynamic accelerometer;
   late dynamic gyroscope;
   late dynamic magnetometer;
 
   void _update() {
     setState(() {
-      formattedTime = DateFormat('kk:mm:ss').format(DateTime.now());
+      formattedTime = DateFormat('kk:mm').format(DateTime.now());
     });
   }
 
@@ -45,23 +46,33 @@ class _PageAState extends State<PageA> {
   List<double>? _magnetometerValues;
   final _streamSubscriptions = <StreamSubscription<dynamic>>[];
 
+  List<double>? _accelerometerX;
+  List<double>? _accelerometerY;
+  List<double>? _accelerometerZ;
+
   @override
   void dispose() {
     super.dispose();
     for (final subscription in _streamSubscriptions) {
       subscription.cancel();
     }
+    longlatSubscription.cancel();
   }
 
   @override
   void initState() {
     super.initState();
     //time
-    _timer = Timer.periodic(const Duration(milliseconds: 1000), (timer) {
+    _timer1 =
+        Timer.periodic(Duration(seconds: data['refresh_rate'] ?? 1), (timer) {
       _update();
       getBatteryPerentage();
+      data['accelerometer'] = [
+        _accelerometerX,
+        _accelerometerY,
+        _accelerometerZ
+      ];
     });
-
     //long lat
     checkGps();
 
@@ -69,9 +80,10 @@ class _PageAState extends State<PageA> {
     _streamSubscriptions.add(
       accelerometerEvents.listen(
         (AccelerometerEvent event) {
-          setState(() {
-            _accelerometerValues = <double>[event.x, event.y, event.z];
-          });
+          _accelerometerValues = <double>[event.x, event.y, event.z];
+          _accelerometerX?.add(event.x.toDouble());
+          _accelerometerY?.add(event.y.toDouble());
+          _accelerometerZ?.add(event.z.toDouble());
         },
         onError: (e) {
           showDialog(
@@ -80,7 +92,7 @@ class _PageAState extends State<PageA> {
                 return const AlertDialog(
                   title: Text("Sensor Not Found"),
                   content: Text(
-                      "It seems that your device doesn't support Gyroscope Sensor"),
+                      "It seems that your device doesn't support Accelerometer Sensor"),
                 );
               });
         },
@@ -90,9 +102,7 @@ class _PageAState extends State<PageA> {
     _streamSubscriptions.add(
       gyroscopeEvents.listen(
         (GyroscopeEvent event) {
-          setState(() {
-            _gyroscopeValues = <double>[event.x, event.y, event.z];
-          });
+          _gyroscopeValues = <double>[event.x, event.y, event.z];
         },
         onError: (e) {
           showDialog(
@@ -101,7 +111,7 @@ class _PageAState extends State<PageA> {
                 return const AlertDialog(
                   title: Text("Sensor Not Found"),
                   content: Text(
-                      "It seems that your device doesn't support User Accelerometer Sensor"),
+                      "It seems that your device doesn't support User Gyroscope Sensor"),
                 );
               });
         },
@@ -111,9 +121,7 @@ class _PageAState extends State<PageA> {
     _streamSubscriptions.add(
       magnetometerEvents.listen(
         (MagnetometerEvent event) {
-          setState(() {
-            _magnetometerValues = <double>[event.x, event.y, event.z];
-          });
+          _magnetometerValues = <double>[event.x, event.y, event.z];
         },
         onError: (e) {
           showDialog(
@@ -197,6 +205,7 @@ class _PageAState extends State<PageA> {
   Widget build(BuildContext context) {
     final accelerometer =
         _accelerometerValues?.map((double v) => v.toStringAsFixed(1)).toList();
+    debugPrint("acc length ${accelerometer?.length}");
     final gyroscope =
         _gyroscopeValues?.map((double v) => v.toStringAsFixed(1)).toList();
     final magnetometer =
@@ -219,12 +228,12 @@ class _PageAState extends State<PageA> {
                 ),
                 Column(
                   children: [
-                    Text('Battery'),
+                    const Text('Battery'),
                     Text("${percentage.toString()}%")
                   ],
                 )
               ]),
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width,
                 height: 500,
                 child: Card(
@@ -234,19 +243,19 @@ class _PageAState extends State<PageA> {
                       children: [
                         Row(
                           children: [
-                            Text("Accelerometer : "),
+                            const Text("Accelerometer : "),
                             Text(accelerometer.toString()),
                           ],
                         ),
                         Row(
                           children: [
-                            Text("Gyroscope        : "),
+                            const Text("Gyroscope        : "),
                             Text(gyroscope.toString()),
                           ],
                         ),
                         Row(
                           children: [
-                            Text("Magnetometer : "),
+                            const Text("Magnetometer : "),
                             Text(magnetometer.toString()),
                           ],
                         ),
@@ -255,11 +264,11 @@ class _PageAState extends State<PageA> {
                           Column(
                             children: [
                               Row(children: [
-                                Text("Latitude : "),
+                                const Text("Latitude : "),
                                 Text(lat.toString())
                               ]),
                               Row(children: [
-                                Text("Longitude : "),
+                                const Text("Longitude : "),
                                 Text(long.toString())
                               ])
                             ],

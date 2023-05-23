@@ -4,6 +4,8 @@ import 'package:assignment_app/pages/page_c.dart';
 import 'package:flutter/material.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 
+Map<String, dynamic> data = {'key': 'value'};
+
 class BottomBar extends StatefulWidget {
   const BottomBar({super.key});
 
@@ -13,6 +15,7 @@ class BottomBar extends StatefulWidget {
 
 class _BottomBarState extends State<BottomBar> {
   int _selectedIndex = 0;
+
   static final List<Widget> _widgetOptions = <Widget>[
     const PageA(),
     const PageB(),
