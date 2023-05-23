@@ -1,14 +1,17 @@
-import 'package:assignment_app/main.dart';
+import 'package:assignment_app/bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const users = const {
+
+const users = {
   'hunter@gmail.com': 'hunter',
 };
 
 class LoginPage extends StatelessWidget {
-  Duration get loginTime => Duration(milliseconds: 250);
+  const LoginPage({super.key});
+  // bool authenticated = false;
+  Duration get loginTime => const Duration(milliseconds: 250);
 
   void saveUser(String email, String password) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -60,9 +63,21 @@ class LoginPage extends StatelessWidget {
       title: 'PHONE STAT',
       onLogin: _authUser,
       onSignup: _signupUser,
+      // loginProviders: [
+      //   LoginProvider(
+      //       icon: FluentSystemIcons.ic_fluent_fingerprint_filled,
+      //       label: 'Biometrics',
+      //       callback: () async {
+      //         final authenticate = await LocalAuth.authenticate();
+      //         if (!authenticate) {
+      //           return 'Not authenticated';
+      //         }
+      //         return null;
+      //       })
+      // ],
       onSubmitAnimationCompleted: () {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => MyHomePage(title: ""),
+          builder: (context) => const BottomBar(),
         ));
       },
       onRecoverPassword: _recoverPassword,
