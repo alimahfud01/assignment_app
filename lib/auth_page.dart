@@ -10,7 +10,7 @@ const users = {
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
-
+  // bool authenticated = false;
   Duration get loginTime => const Duration(milliseconds: 250);
 
   void saveUser(String email, String password) async {
@@ -63,6 +63,18 @@ class LoginPage extends StatelessWidget {
       title: 'PHONE STAT',
       onLogin: _authUser,
       onSignup: _signupUser,
+      // loginProviders: [
+      //   LoginProvider(
+      //       icon: FluentSystemIcons.ic_fluent_fingerprint_filled,
+      //       label: 'Biometrics',
+      //       callback: () async {
+      //         final authenticate = await LocalAuth.authenticate();
+      //         if (!authenticate) {
+      //           return 'Not authenticated';
+      //         }
+      //         return null;
+      //       })
+      // ],
       onSubmitAnimationCompleted: () {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => const BottomBar(),
